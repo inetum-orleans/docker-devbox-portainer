@@ -1,0 +1,27 @@
+version: '2.2'
+
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer 
+    environment:
+      - 'VIRTUAL_HOST=${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}'
+      - 'VIRTUAL_PORT=9000'
+    command: -H unix:///var/run/docker.sock --no-auth
+    networks:
+      - default
+      - reverse-proxy
+    restart: '${DOCKER_DEVBOX_RESTART_POLICY}'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}"
+      - "traefik.port=9000"
+networks:
+  reverse-proxy:
+    external: true
+    name: ${DOCKER_DEVBOX_REVERSE_PROXY_NETWORK}
+volumes:
+  portainer: null
