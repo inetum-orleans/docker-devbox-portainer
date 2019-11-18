@@ -4,9 +4,6 @@ services:
     container_name: portainer
     image: portainer/portainer
     command: -H unix:///var/run/docker.sock --no-auth
-    networks:
-      - default
-      - reverse-proxy
     restart: '${DOCKER_DEVBOX_RESTART_POLICY}'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
