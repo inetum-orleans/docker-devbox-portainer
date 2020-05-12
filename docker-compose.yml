@@ -1,12 +1,29 @@
-version: '3.7'
+networks:
+  reverse-proxy:
+    external: true
+    name: reverse-proxy
 services:
   portainer:
+    command: -H unix:///var/run/docker.sock --no-auth
     container_name: portainer
     image: portainer/portainer
-    command: -H unix:///var/run/docker.sock --no-auth
-    restart: '${DOCKER_DEVBOX_RESTART_POLICY}'
+    init: true
+    labels:
+      ddb.emit.certs:generate: portainer.test
+      traefik.enable: 'true'
+      traefik.http.routers.portainer-tls.rule: Host(`portainer.test`)
+      traefik.http.routers.portainer-tls.service: portainer
+      traefik.http.routers.portainer-tls.tls: 'true'
+      traefik.http.routers.portainer.rule: Host(`portainer.test`)
+      traefik.http.routers.portainer.service: portainer
+      traefik.http.services.portainer.loadbalancer.server.port: 9000
+    networks:
+    - default
+    - reverse-proxy
+    restart: 'no'
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer:/data
+    - /var/run/docker.sock:/var/run/docker.sock
+    - portainer:/data
+version: '3.7'
 volumes:
-  portainer: ~
+  portainer: {}
