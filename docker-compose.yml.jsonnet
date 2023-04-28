@@ -7,7 +7,7 @@ local domain = std.join('.', [domain_sub, domain_ext]);
 
 ddb.Compose() + {
    services: {
-      portainer: ddb.Image("portainer/portainer") + ddb.VirtualHost(9000, domain) {
+      portainer: ddb.Image("portainer/portainer-ce") + ddb.VirtualHost(9000, domain) {
          container_name: "portainer",
          command: "-H unix:///var/run/docker.sock",
          volumes: [
